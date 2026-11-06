@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Une petite lettre pour toi</title>
+<style>
+:root{--bg:#fff1f2;--card:#ffffff;--text:#3b1d27;--accent:#e11d48;--accent2:#fb7185;--muted:#8a5a67;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c0f14;--card:#2a161d;--text:#fde8ec;--accent:#fb7185;--accent2:#e11d48;--muted:#d9a3b0;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1c0f14;--card:#2a161d;--text:#fde8ec;--accent:#fb7185;--accent2:#e11d48;--muted:#d9a3b0;color-scheme:dark}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--text);font-family:Georgia,"Times New Roman",serif;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px;box-sizing:border-box;overflow-x:hidden}
+.wrap{width:100%;max-width:440px;text-align:center}
+.envelope{font-size:90px;cursor:pointer;animation:bounce 1.6s infinite;user-select:none}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.hint{color:var(--muted);font-style:italic}
+.hidden{display:none}
+.card{background:var(--card);border-radius:18px;padding:26px 22px;box-shadow:0 10px 30px rgba(225,29,72,.18);text-align:left;line-height:1.6;animation:pop .5s ease}
+@keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+h1{font-size:22px;margin:0 0 12px;color:var(--accent)}
+.card p{margin:0 0 12px}
+.sign{text-align:right;font-style:italic;margin-top:8px}
+button{font:inherit;border:0;border-radius:999px;padding:12px 22px;cursor:pointer;font-size:17px}
+.next{background:var(--accent);color:#fff;display:block;margin:16px auto 0}
+.q{font-size:24px;margin:0 0 6px;color:var(--accent);text-align:center}
+.sub{text-align:center;color:var(--muted);margin:0 0 20px}
+.btns{display:flex;gap:14px;justify-content:center;align-items:center;min-height:70px;position:relative}
+#yes{background:var(--accent);color:#fff;transition:transform .2s}
+#no{background:var(--card);color:var(--text);border:2px solid var(--muted);transition:left .2s,top .2s}
+.final{font-size:20px;text-align:center}
+.heart{color:var(--accent);position:fixed;top:-30px;font-size:24px;animation:fall linear forwards;pointer-events:none}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div id="s1">
+    <div class="envelope" id="env"><svg viewBox="0 0 100 70" width="110" height="77"><rect x="2" y="2" width="96" height="66" rx="8" fill="var(--card)" stroke="var(--accent)" stroke-width="3"/><path d="M4 6 L50 40 L96 6" fill="none" stroke="var(--accent)" stroke-width="3"/></svg></div>
+    <p class="hint">Touche l’enveloppe, j’ai quelque chose à te dire…</p>
+  </div>
+
+  <div id="s2" class="hidden">
+    <div class="card">
+      <h1>Une petite lettre pour toi</h1>
+      <p><span id="nm"></span>,</p>
+      <p>Je voulais d’abord te dire pardon. Pour les quatre poubelles dans mon téléphone, c’était nul et pas très gentil.</p>
+      <p>Merci d’avoir pris le temps de m’expliquer calmement.</p>
+      <p>J’ai vraiment envie de sortir avec toi ce soir, et s’il te plaît n’annule pas notre sortie. Après, je te laisse tranquille.</p>
+      
+      <div class="sign">Ton ex préféré</div>
+      <button class="next" id="go">Voir ma proposition</button>
+    </div>
+  </div>
+
+  <div id="s3" class="hidden">
+    <div class="card">
+      <div class="q">Veux-tu venir voir Ebinto avec moi au cinéma ce soir ?</div>
+      <p class="sub">Je paie le pop-corn. Ça va être marrant, promis.</p>
+      <div class="btns" id="area">
+        <button id="yes">Oui</button>
+        <button id="no">Non</button>
+      </div>
+      <p class="sub" id="msg"></p>
+    </div>
+  </div>
+
+  <div id="s4" class="hidden">
+    <div class="card final">
+      <div style="font-size:34px;color:var(--accent)"><b>Ebinto</b></div>
+      <p>Au moins j’ai tenté, écris-moi si tu acceptes.</p>
+      
+    </div>
+  </div>
+
+</div>
+
+<script>
+var NAME = "MAN";
+document.getElementById("nm").textContent = NAME || "toi";
+
+function show(id){
+  ["s1","s2","s3","s4"].forEach(function(s){
+    document.getElementById(s).classList.toggle("hidden", s !== id);
+  });
+}
+document.getElementById("env").onclick = function(){ show("s2"); };
+document.getElementById("go").onclick = function(){ show("s3"); };
+
+var no = document.getElementById("no"), yes = document.getElementById("yes");
+var msg = document.getElementById("msg"), area = document.getElementById("area");
+var tries = 0;
+var lines = [
+  "Tu es sûre ?",
+  "Réfléchis encore un peu…",
+  "Même pas pour du pop-corn gratuit ?",
+  "Le bouton Non est en panne",
+  "Allez, dis oui !",
+  "Je ne te lâche pas"
+];
+
+function dodge(e){
+  if(e) e.preventDefault();
+  tries++;
+  msg.textContent = lines[Math.min(tries - 1, lines.length - 1)];
+  no.style.position = "absolute";
+  var maxX = area.clientWidth - no.offsetWidth;
+  var maxY = area.clientHeight + 40;
+  no.style.left = Math.random() * Math.max(maxX, 0) + "px";
+  no.style.top = (Math.random() * maxY - 20) + "px";
+  yes.style.transform = "scale(" + Math.min(1 + tries * 0.15, 2) + ")";
+}
+no.addEventListener("mouseenter", dodge);
+no.addEventListener("touchstart", dodge);
+no.addEventListener("click", dodge);
+
+yes.onclick = function(){
+  show("s4");
+  for(var i = 0; i < 40; i++){
+    var h = document.createElement("div");
+    h.className = "heart";
+    h.textContent = ["♥","♥","✦","♥"][i % 4];
+    h.style.left = Math.random() * 100 + "vw";
+    h.style.animationDuration = (2 + Math.random() * 3) + "s";
+    h.style.animationDelay = (Math.random() * 1.5) + "s";
+    document.body.appendChild(h);
+    setTimeout(function(el){ el.remove(); }, 7000, h);
+  }
+};
+</script>
+</body>
+</html>
